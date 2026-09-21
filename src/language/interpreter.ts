@@ -1,7 +1,7 @@
-import { spanFor, tr, type Expr, type LanguageLocale, type Program, type RunResult, type Statement, type Value } from "./types";
+import { spanFor, tr, type Expr, type LanguageLocale, type Program, type RunResult, type ScalarType, type Statement, type Value } from "./types";
 const key = (s: string): string => s.toUpperCase();
 export function execute(program: Program, locale: LanguageLocale): RunResult {
-  const output: string[] = [], diagnostics: RunResult["diagnostics"] = [], values = new Map<string, Value>(), names = new Map<string, string>(), constants = new Set<string>(); let steps = 0;
+  const output: string[] = [], diagnostics: RunResult["diagnostics"] = [], values = new Map<string, Value>(), names = new Map<string, string>(), variableTypes = new Map<string, ScalarType>(), constants = new Set<string>(); let steps = 0;
   const report = (line: number, code: string, fr: string, en: string, suggestion?: [string, string]) => diagnostics.push({ severity: "error" as const, code, message: tr(locale, fr, en), suggestion: suggestion ? tr(locale, ...suggestion) : undefined, span: spanFor(line) });
   const evaluate = (e: Expr, line: number): Value | undefined => {
     if (e.kind === "literal") return e.value;
@@ -16,12 +16,16 @@ export function execute(program: Program, locale: LanguageLocale): RunResult {
     if (["/", "DIV", "MOD"].includes(e.op) && right === 0) { report(line, "ALG-R101", "Division par zéro impossible.", "Division by zero is not allowed."); return; }
     return ({ "+": left + right, "-": left - right, "*": left * right, "/": left / right, DIV: Math.trunc(left / right), MOD: left % right } as Record<string, number>)[e.op];
   };
-  for (const name of program.declarations) { names.set(key(name), name); values.set(key(name), 0); }
+  const accepts = (type: ScalarType, value: Value): boolean => type === "Entier" ? typeof value === "number" && Number.isInteger(value) : type === "Reel" ? typeof value === "number" : type === "Booleen" ? typeof value === "boolean" : type === "Caractere" ? typeof value === "string" && [...value].length === 1 : typeof value === "string";
+  for (const declaration of program.declarations) {
+    const normalized = key(declaration.name); names.set(normalized, declaration.name); variableTypes.set(normalized, declaration.type);
+    values.set(normalized, declaration.type === "Booleen" ? false : ["Chaine", "Caractere"].includes(declaration.type) ? "" : 0);
+  }
   for (const item of program.constants) { const value = evaluate(item.value, item.line); if (value !== undefined) { names.set(key(item.name), item.name); values.set(key(item.name), value); constants.add(key(item.name)); } }
   const block = (statements: Statement[]): boolean => {
     for (const s of statements) {
       if (++steps > 100000) { report(s.line, "ALG-R103", "Trop d'itérations : exécution arrêtée.", "Too many iterations: execution stopped."); return false; }
-      if (s.kind === "assign") { const k = key(s.name); if (!values.has(k)) { report(s.line, "ALG-S100", `La variable \`${s.name}\` n'est pas déclarée.`, `The variable \`${s.name}\` is not declared.`, ["Déclarez-la dans la section `Variables`.", "Declare it in the `Variables` section."]); return false; } if (constants.has(k)) { report(s.line, "ALG-S104", "Une constante ne peut pas être modifiée.", "A constant cannot be changed."); return false; } const value = evaluate(s.value, s.line); if (value === undefined) return false; values.set(k, value); }
+      if (s.kind === "assign") { const k = key(s.name); if (!values.has(k)) { report(s.line, "ALG-S100", `La variable \`${s.name}\` n'est pas déclarée.`, `The variable \`${s.name}\` is not declared.`, ["Déclarez-la dans la section `Variables`.", "Declare it in the `Variables` section."]); return false; } if (constants.has(k)) { report(s.line, "ALG-S104", "Une constante ne peut pas être modifiée.", "A constant cannot be changed."); return false; } const value = evaluate(s.value, s.line); if (value === undefined) return false; const expected = variableTypes.get(k); if (expected && !accepts(expected, value)) { report(s.line, "ALG-S106", `Valeur incompatible avec le type ${expected}.`, `Value is incompatible with type ${expected}.`); return false; } values.set(k, value); }
       else if (s.kind === "write") { const line = s.values.map((e) => evaluate(e, s.line)); if (line.some((v) => v === undefined)) return false; output.push(line.map((v) => typeof v === "boolean" ? (v ? "Vrai" : "Faux") : String(v)).join("")); }
       else if (s.kind === "if") { if (!block(evaluate(s.condition, s.line) ? s.yes : s.no)) return false; }
       else if (s.kind === "while") { while (evaluate(s.condition, s.line)) if (!block(s.body)) return false; }

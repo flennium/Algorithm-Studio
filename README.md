@@ -49,6 +49,7 @@ Before opening a pull request:
 ```bash
 npm run typecheck
 npm test
+npm run test:coverage
 npm run build
 ```
 
