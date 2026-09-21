@@ -13,16 +13,16 @@ program.
 - Create a named `.algo` program from inside the app.
 - Open and save `.algo`, `.alg`, and plain-text source files.
 - Highlight Algorithm syntax and complete common keywords.
-- Run declarations, assignments, arithmetic expressions, strings, comments,
-  and `Ecrire`.
+- Run constants, scalar declarations, arithmetic and Boolean expressions,
+  decisions, the three standard loop forms, comments, and `Ecrire`.
 - Explain syntax and runtime errors at the relevant line and column.
 - Read the language guide without leaving the editor.
 - Use the interface in French or English. French is the default.
 - Follow the system light or dark theme, with a manual override.
 
-The language is deliberately small at this stage. Input, conditions, loops,
-arrays, procedures, functions, and drawing are documented as planned rather
-than presented as working features.
+The executable core is deliberately honest about its boundary. Interactive
+input, arrays, procedures, functions, files, and drawing are documented as
+future language work rather than presented as working features.
 
 ## Install
 
@@ -66,8 +66,8 @@ The installer is written to `release/Algorithm-Studio-Setup-<version>.exe`.
 src/main/          Electron window, native dialogs, and file access
 src/preload/       Small typed bridge between Electron and React
 src/renderer/      Editor, guide, themes, and translations
-src/language/      Lexer, parser, diagnostics, and interpreter
-docs/              Language and implementation notes
+src/language/      Expressions, parser, runtime, shared types, and public API
+docs/              Canonical language reference
 ```
 
 The language engine has no dependency on Electron. Keeping that boundary makes

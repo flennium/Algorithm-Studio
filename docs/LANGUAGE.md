@@ -1,94 +1,71 @@
-# Algorithm language reference
+# Algorithm Studio language reference
 
-This document describes the syntax accepted by the current interpreter. It is
-not a universal definition of pseudocode: universities use different dialects,
-and the project will refine this one using real course material.
+Algorithm Studio implements a defined teaching dialect of French pseudocode. Pseudocode is not standardized: spellings and block markers vary between universities. This dialect follows the common introductory core while keeping every accepted form executable and testable.
 
-## Program structure
+## Complete program
 
 ```algorithm
-Algorithme Addition
+Algorithme SommePaire
+Constantes
+    LIMITE = 10
 Variables
-    a, b, resultat : Entier
+    i, total : Entier
 Debut
-    a <- 12
-    b <- 8
-    resultat <- a + b
-    Ecrire("Resultat : ", resultat)
+    total <- 0
+    Pour i <- 1 A LIMITE Faire
+        Si i MOD 2 = 0 Alors
+            total <- total + i
+        FinSi
+    FinPour
+    Ecrire("Somme : ", total)
 Fin
 ```
 
-A program starts with `Algorithme` and a name. Declarations come before
-`Debut`. Executable instructions sit between `Debut` and `Fin`.
+Keywords are case-insensitive. Accented and unaccented forms are accepted where they commonly differ. Comments start with `//`.
 
-Keywords are case-insensitive. Accented forms such as `Début`, `Écrire`,
-`Réel`, and `Chaîne` are accepted alongside their unaccented forms.
+## Declarations and expressions
 
-## Values and variables
+The recognized classroom types are `Entier`, `Reel`, `Chaine`, `Caractere`, and `Booleen`. Boolean literals are `Vrai` and `Faux`. Constants use `=` or `<-` and cannot be reassigned.
 
-The available scalar types are:
+| Family | Operators |
+|---|---|
+| grouping | `( … )` |
+| unary | `+`, `-`, `NON` |
+| multiplication | `*`, `/`, `DIV`, `MOD` |
+| addition | `+`, `-` |
+| comparison | `=`, `<>`, `!=`, `<`, `<=`, `>`, `>=` |
+| Boolean | `ET`, `OU` |
 
-| Type | Purpose | Example |
-|---|---|---|
-| `Entier` | Whole numbers | `42` |
-| `Reel` | Decimal numbers | `3.14` |
-| `Chaine` | Text | `"Bonjour"` |
+`DIV` performs integer division. `MOD` returns the remainder. `+` joins text when either operand is a string.
 
-Declare one or several variables on a line:
-
-```algorithm
-age : Entier
-prix, total : Reel
-nom : Chaine
-```
-
-Use `<-` to assign a value:
+## Decisions and loops
 
 ```algorithm
-age <- 20
-total <- prix * 3
+Si note >= 10 Alors
+    Ecrire("Admis")
+Sinon
+    Ecrire("Ajourné")
+FinSi
+
+Pour i <- 1 A 10 Faire
+    Ecrire(i)
+FinPour
+
+TantQue compteur < 10 Faire
+    compteur <- compteur + 1
+FinTantQue
+
+Repeter
+    compteur <- compteur - 1
+JusquA compteur = 0
 ```
 
-Using an undeclared variable is an error.
+`Pour` accepts an optional `Pas`, including a negative step. The runtime stops after 100,000 executed statements and reports a diagnostic instead of hanging on an infinite loop.
 
-## Expressions
+## Current boundary
 
-The interpreter supports `+`, `-`, `*`, and `/`. Multiplication and division
-run before addition and subtraction. Parentheses make the intended order clear.
+The executable core currently covers scalar programs. Interactive `Lire`, arrays and matrices, records, files, procedures/functions, recursion, and drawing are not yet part of the runtime. They remain explicit here instead of being presented as working syntax.
 
-```algorithm
-resultat <- (2 + 3) * 4
-```
+## Academic basis
 
-The `+` operator can also join text values. Division by zero is an error.
-
-## Output
-
-`Ecrire` prints its comma-separated arguments on one line:
-
-```algorithm
-Ecrire("Total : ", total)
-```
-
-## Comments
-
-Text after `//` is ignored until the end of the line:
-
-```algorithm
-total <- prix * quantite // Calcul du prix final
-```
-
-## Current limits
-
-The following syntax is planned but not implemented yet:
-
-- `Lire` and interactive input;
-- comparisons and Boolean values;
-- `Si`, `Sinon`, and `FinSi`;
-- `Pour`, `TantQue`, and repeat loops;
-- arrays and matrices;
-- procedures and functions;
-- drawing instructions.
-
-The editor may already highlight some planned keywords. Highlighting does not
-mean that the interpreter can execute them.
+The scope was checked against introductory material from Université Lyon 1 (functions/procedures, parameter passing, arrays, strings, structures, files), Université de Lille (control and data structures), and Universitat Politècnica de Catalunya (loops, types/scope, subprograms, recursion, vectors, multidimensional vectors, structures, sorting, numerical algorithms). These sources define a curriculum inventory, not one universal syntax.

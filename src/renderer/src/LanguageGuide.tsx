@@ -25,7 +25,7 @@ const sections: Record<Locale, GuideSection[]> = {
       title: "Variables et valeurs",
       intro: "Une variable doit être déclarée avant son utilisation. L’affectation utilise la flèche <-.",
       items: [
-        { title: "Types disponibles", body: "Entier pour les nombres entiers, Reel pour les décimaux et Chaine pour le texte.", code: `age : Entier\nprix : Reel\nnom : Chaine` },
+        { title: "Types disponibles", body: "Entier, Reel, Chaine, Caractere et Booleen. Les constantes se déclarent avant les variables.", code: `MAX = 100\nage : Entier\nadmis : Booleen` },
         { title: "Affectation", body: "La valeur située à droite est calculée avant d’être placée dans la variable.", code: `total <- prix * quantite` },
       ],
     },
@@ -33,7 +33,7 @@ const sections: Record<Locale, GuideSection[]> = {
       id: "expressions",
       title: "Calculs et expressions",
       intro: "Les parenthèses permettent de rendre l’ordre des calculs explicite.",
-      items: [{ title: "Opérateurs pris en charge", body: "Addition +, soustraction -, multiplication * et division /.", code: `moyenne <- (note1 + note2) / 2` }],
+      items: [{ title: "Opérateurs pris en charge", body: "Calculs + - * / DIV MOD, comparaisons, et logique ET, OU, NON.", code: `admis <- moyenne >= 10 ET absence < 5` }],
     },
     {
       id: "output",
@@ -46,8 +46,8 @@ const sections: Record<Locale, GuideSection[]> = {
       title: "Limites actuelles",
       intro: "Algorithm Studio évolue encore. Le guide distingue volontairement ce qui fonctionne de ce qui arrive ensuite.",
       items: [
-        { title: "Disponible", body: "Déclarations, nombres, chaînes, affectations, calculs, commentaires // et Ecrire." },
-        { title: "Pas encore disponible", body: "Lire, conditions, boucles, tableaux, matrices, procédures, fonctions et dessin." },
+        { title: "Disponible", body: "Constantes, cinq types scalaires, expressions, conditions, boucles Pour/TantQue/Repeter, commentaires et Ecrire." },
+        { title: "Pas encore disponible", body: "Lire interactif, tableaux, matrices, enregistrements, fichiers, procédures, fonctions, récursion et dessin." },
       ],
     },
   ],
@@ -67,7 +67,7 @@ const sections: Record<Locale, GuideSection[]> = {
       title: "Variables and values",
       intro: "A variable must be declared before it is used. Assignment uses the <- arrow.",
       items: [
-        { title: "Available types", body: "Entier for whole numbers, Reel for decimals, and Chaine for text.", code: `age : Entier\nprix : Reel\nnom : Chaine` },
+        { title: "Available types", body: "Entier, Reel, Chaine, Caractere, and Booleen. Constants are declared before variables.", code: `MAX = 100\nage : Entier\nadmis : Booleen` },
         { title: "Assignment", body: "The value on the right is calculated before it is stored in the variable.", code: `total <- prix * quantite` },
       ],
     },
@@ -75,7 +75,7 @@ const sections: Record<Locale, GuideSection[]> = {
       id: "expressions",
       title: "Calculations and expressions",
       intro: "Parentheses make the intended order of a calculation explicit.",
-      items: [{ title: "Supported operators", body: "Addition +, subtraction -, multiplication *, and division /.", code: `moyenne <- (note1 + note2) / 2` }],
+      items: [{ title: "Supported operators", body: "Arithmetic + - * / DIV MOD, comparisons, and ET, OU, NON logic.", code: `admis <- moyenne >= 10 ET absence < 5` }],
     },
     {
       id: "output",
@@ -88,8 +88,8 @@ const sections: Record<Locale, GuideSection[]> = {
       title: "Current limits",
       intro: "Algorithm Studio is still growing. This guide clearly separates working features from planned ones.",
       items: [
-        { title: "Available", body: "Declarations, numbers, strings, assignments, arithmetic, // comments, and Ecrire." },
-        { title: "Not available yet", body: "Lire, conditions, loops, arrays, matrices, procedures, functions, and drawing." },
+        { title: "Available", body: "Constants, five scalar types, expressions, decisions, Pour/TantQue/Repeter loops, comments, and Ecrire." },
+        { title: "Not available yet", body: "Interactive Lire, arrays, matrices, records, files, procedures, functions, recursion, and drawing." },
       ],
     },
   ],
