@@ -9,6 +9,7 @@ import { run, type Diagnostic, type RunResult } from "../../language";
 import { registerAlgorithmLanguage } from "./editor-language";
 import { LanguageGuide } from "./LanguageGuide";
 import { format, getCopy, type Locale } from "./i18n";
+import { documents } from "./platform";
 
 type Theme = "light" | "dark";
 type View = "editor" | "guide";
@@ -125,7 +126,7 @@ export default function App(): React.JSX.Element {
   }
 
   async function openDocument(): Promise<void> {
-    const document = await window.desktop.openDocument();
+    const document = await documents.openDocument();
     if (!document) return;
     setSource(document.content);
     setDocumentPath(document.path);
@@ -135,7 +136,7 @@ export default function App(): React.JSX.Element {
   }
 
   async function saveDocument(): Promise<void> {
-    const saved = await window.desktop.saveDocument(documentPath, source);
+    const saved = await documents.saveDocument(documentPath, source);
     if (saved) setDocumentPath(saved.path);
   }
 

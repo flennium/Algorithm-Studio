@@ -8,6 +8,8 @@ The desktop app is built for students who should not need to create file
 extensions, configure a compiler, or learn an IDE before writing their first
 program.
 
+Use it online at [flennium.github.io/Algorithm-Studio](https://flennium.github.io/Algorithm-Studio/), or install the Windows desktop version. Both targets run the same React interface and language engine.
+
 ## What works today
 
 - Create a named `.algo` program from inside the app.
@@ -44,6 +46,12 @@ npm ci
 npm run dev
 ```
 
+Run the same application in a browser:
+
+```bash
+npm run dev:web
+```
+
 Before opening a pull request:
 
 ```bash
@@ -51,6 +59,7 @@ npm run typecheck
 npm test
 npm run test:coverage
 npm run build
+npm run build:web
 ```
 
 Create a Windows installer with:
@@ -66,14 +75,16 @@ The installer is written to `release/Algorithm-Studio-Setup-<version>.exe`.
 ```text
 src/main/          Electron window, native dialogs, and file access
 src/preload/       Small typed bridge between Electron and React
-src/renderer/      Editor, guide, themes, and translations
+src/renderer/      Shared web and desktop application
 src/language/      Expressions, parser, runtime, shared types, and public API
+src/shared/        Platform-neutral contracts
 docs/              Canonical language reference
 ```
 
-The language engine has no dependency on Electron. Keeping that boundary makes
-it possible to test the interpreter directly and reuse it in another interface
-later.
+The language engine and interface have no dependency on Electron. A small
+document adapter uses native dialogs on desktop and browser import/download on
+the web. This keeps the behavior in one source tree while allowing each
+platform to handle files naturally.
 
 ## Language reference
 

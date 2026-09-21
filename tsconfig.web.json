@@ -10,5 +10,5 @@
     "allowImportingTsExtensions": true,
     "types": ["vite/client"]
   },
-  "include": ["src/renderer/**/*", "src/language/**/*"]
+  "include": ["src/renderer/**/*", "src/language/**/*", "src/shared/**/*"]
 }
