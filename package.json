@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "npm run typecheck && npm test && electron-vite build",
-    "dist": "npm run build && electron-builder --win nsis",
+    "dist": "npm run build && electron-builder --win nsis --publish never",
     "preview": "electron-vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
