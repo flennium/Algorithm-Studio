@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="190" height="144" viewBox="0 0 190 144"><g transform="translate(52 8) scale(1.5)">
+      <path d="M8 56L26 8H36L56 56H44L31 22L20 56Z" fill="#F5F7F8"/>
+      <path d="M20 40H32V30H41" fill="none" stroke="#55B5D9" stroke-width="6" stroke-linecap="square" stroke-linejoin="round"/>
+      <path d="M39 24L50 30L39 36Z" fill="#55B5D9"/>
+    </g><text x="18" y="126" fill="#F5F7F8" font-family="Inter, 'Atkinson Hyperlegible Next', Arial, sans-serif" font-size="24.48" letter-spacing="-0.576"><tspan font-weight="700">Algorithm</tspan><tspan font-weight="400"> Studio</tspan></text></svg>

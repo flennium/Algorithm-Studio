@@ -1,3 +1,5 @@
+![Algorithm Studio](algorithm-studio-brand-kit/png/algorithm-studio-readme-header.png)
+
 # Algorithm Studio
 
 Algorithm Studio makes the pseudocode taught in introductory university courses
@@ -80,6 +82,7 @@ src/renderer/      Shared web and desktop application
 src/language/      Expressions, parser, runtime, shared types, and public API
 src/shared/        Platform-neutral contracts
 docs/              Canonical language reference
+algorithm-studio-brand-kit/  Brand guidelines and production artwork
 ```
 
 The language engine and interface have no dependency on Electron. A small
@@ -93,6 +96,13 @@ The in-app guide is the quickest reference for students. The repository also
 contains the current [language reference](docs/LANGUAGE.md), including exact
 syntax and implementation limits. Planned work is tracked in the
 [1.0 release roadmap](docs/ROADMAP.md).
+
+## Brand assets
+
+The repository includes the official [brand kit](algorithm-studio-brand-kit/README.md)
+with editable SVG masters, production exports, platform icons, and usage
+guidelines. Use the supplied variants without recoloring or rearranging the
+mark.
 
 ## Contributing
 

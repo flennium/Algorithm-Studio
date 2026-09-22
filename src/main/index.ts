@@ -7,6 +7,9 @@ import { join } from "node:path";
 app.disableHardwareAcceleration();
 
 function createWindow(): void {
+  const icon = app.isPackaged
+    ? join(process.resourcesPath, "brand", "algorithm-studio.ico")
+    : join(app.getAppPath(), "algorithm-studio-brand-kit", "icons", "algorithm-studio.ico");
   const window = new BrowserWindow({
     show: false,
     width: 1360,
@@ -15,6 +18,7 @@ function createWindow(): void {
     minHeight: 620,
     backgroundColor: "#f5f7f8",
     title: "Algorithm Studio",
+    icon,
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       contextIsolation: true,

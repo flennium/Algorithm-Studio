@@ -5,7 +5,6 @@ import {
   Check,
   ChevronRight,
   Clipboard,
-  Code2,
   Database,
   GitBranch,
   Keyboard,
@@ -15,6 +14,7 @@ import {
   Workflow,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { brandAsset } from "./brand";
 import type { Locale } from "./i18n";
 
 type Topic = {
@@ -430,7 +430,10 @@ export function LanguageGuide({
     <section className="docs-shell">
       <aside className="docs-sidebar">
         <div className="docs-version">
-          <Code2 size={18} />
+          <span className="docs-brand-symbol" aria-hidden="true">
+            <img className="brand-symbol-light" src={brandAsset("symbol-light.svg")} alt="" />
+            <img className="brand-symbol-dark" src={brandAsset("symbol-dark.svg")} alt="" />
+          </span>
           <span>
             <strong>Algorithm Studio</strong>
             <small>Language 1.0</small>

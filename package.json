@@ -51,11 +51,23 @@
       "out/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "algorithm-studio-brand-kit/icons/algorithm-studio.ico",
+        "to": "brand/algorithm-studio.ico"
+      }
+    ],
     "win": {
       "target": "nsis",
+      "icon": "algorithm-studio-brand-kit/icons/algorithm-studio.ico",
       "artifactName": "Algorithm-Studio-Setup-${version}.${ext}"
     },
+    "mac": {
+      "icon": "algorithm-studio-brand-kit/icons/algorithm-studio.icns"
+    },
     "nsis": {
+      "installerIcon": "algorithm-studio-brand-kit/icons/algorithm-studio.ico",
+      "uninstallerIcon": "algorithm-studio-brand-kit/icons/algorithm-studio.ico",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,

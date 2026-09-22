@@ -19,6 +19,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { run, type Diagnostic, type RunResult } from "../../language";
 import { registerAlgorithmLanguage } from "./editor-language";
+import { brandAsset } from "./brand";
 import { LanguageGuide } from "./LanguageGuide";
 import { format, getCopy, type Locale } from "./i18n";
 import { documents } from "./platform";
@@ -226,12 +227,13 @@ export default function App(): React.JSX.Element {
           onClick={() => setView("editor")}
           aria-label="Algorithm Studio"
         >
-          <span className="brand-mark" aria-hidden="true">
-            <Code2 size={20} />
+          <span className="brand-lockup" aria-hidden="true">
+            <img className="brand-symbol-light" src={brandAsset("logo-horizontal-light.svg")} alt="" />
+            <img className="brand-symbol-dark" src={brandAsset("logo-horizontal-dark.svg")} alt="" />
           </span>
-          <span>
-            <strong>Algorithm Studio</strong>
-            <small>{copy.tagline}</small>
+          <span className="brand-mobile-mark" aria-hidden="true">
+            <img className="brand-symbol-light" src={brandAsset("symbol-light.svg")} alt="" />
+            <img className="brand-symbol-dark" src={brandAsset("symbol-dark.svg")} alt="" />
           </span>
         </button>
         <nav className="view-switcher" aria-label="Navigation">
@@ -342,7 +344,7 @@ export default function App(): React.JSX.Element {
                   theme={theme === "dark" ? "algorithm-night" : "algorithm-day"}
                   options={{
                     automaticLayout: true,
-                    fontFamily: "Iosevka, Cascadia Code, Consolas, monospace",
+                    fontFamily: "JetBrains Mono, Iosevka, Cascadia Code, Consolas, monospace",
                     fontSize: 15,
                     lineHeight: 24,
                     minimap: { enabled: false },
