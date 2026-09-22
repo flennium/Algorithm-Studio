@@ -28,19 +28,21 @@ button { color: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #79c0ff; outline-offset: 2px; }
 
 .app-shell { height: 100vh; display: grid; grid-template-rows: 64px minmax(0, 1fr) 190px; color: var(--text); background: var(--canvas); }
-.app-shell:has(.guide-layout) { grid-template-rows: 64px minmax(0, 1fr); }
-.topbar { display: grid; grid-template-columns: 245px 1fr auto; align-items: center; padding: 0 18px; border-bottom: 1px solid var(--border); background: var(--surface); z-index: 5; }
+.app-shell:has(.guide-layout), .app-shell:has(.docs-shell) { grid-template-rows: 64px minmax(0, 1fr); }
+.topbar { display: grid; grid-template-columns: minmax(190px, 1fr) auto minmax(390px, 1fr); align-items: center; padding: 0 16px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(14px); z-index: 5; }
 
 .brand { display: flex; align-items: center; gap: 11px; padding: 0; text-align: left; border: 0; background: transparent; cursor: pointer; }
 .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; color: white; background: var(--accent); }
 .brand strong { display: block; font-size: 15px; letter-spacing: -0.01em; }
 .brand small { display: block; margin-top: 2px; color: var(--text-muted); font-size: 11px; }
 
-.view-switcher { justify-self: center; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 8px; background: var(--surface-muted); }
-.view-switcher button { display: flex; align-items: center; gap: 7px; height: 31px; padding: 0 11px; color: var(--text-muted); border: 0; border-radius: 6px; background: transparent; cursor: pointer; font-size: 12px; }
-.view-switcher button.active { color: var(--text); background: var(--surface); box-shadow: 0 1px 2px rgb(0 0 0 / 9%); font-weight: 700; }
+.view-switcher { justify-self: center; display: flex; align-items: center; gap: 2px; height: 40px; padding: 3px; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--surface-muted); }
+.view-switcher button { position: relative; display: flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px; color: var(--text-muted); border: 0; border-radius: 7px; background: transparent; cursor: pointer; font-size: 12px; }
+.view-switcher button.active { color: var(--accent-text); background: var(--surface); box-shadow: 0 1px 3px rgb(0 0 0 / 10%); font-weight: 700; }
 
-.toolbar { display: flex; align-items: center; gap: 6px; }
+.toolbar { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.toolbar-group { display: flex; align-items: center; gap: 3px; }
+.toolbar-divider { width: 1px; height: 24px; background: var(--border-soft); }
 .toolbar button { height: 36px; border-radius: 7px; cursor: pointer; }
 .icon-button, .language-button, .primary-quiet { display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--text-secondary); border: 1px solid transparent; background: transparent; }
 .icon-button { width: 36px; padding: 0; }
@@ -94,6 +96,59 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .dialog-actions > button { height: 38px; padding: 0 13px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); cursor: pointer; }
 .dialog-actions .create-button { border-color: var(--accent-hover); background: var(--accent); }
 
+.input-dialog { width: min(460px, 100%); display: grid; grid-template-columns: 44px 1fr; gap: 14px; padding: 24px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: 0 22px 70px rgb(0 0 0 / 30%); }
+.input-dialog h2 { margin: 1px 0 5px; font-size: 19px; }
+.input-dialog p { margin: 0; color: var(--text-muted); line-height: 1.5; }
+.input-dialog code { color: var(--accent-text); }
+.input-dialog > input { grid-column: 1 / -1; height: 44px; padding: 0 12px; color: var(--text); border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); font-family: Iosevka, "Cascadia Code", monospace; }
+.input-dialog .dialog-actions { grid-column: 1 / -1; }
+
+.docs-shell { min-height: 0; display: grid; grid-template-columns: 276px minmax(0, 1fr); overflow: hidden; background: var(--surface); }
+.docs-sidebar { overflow: auto; padding: 22px 16px 40px; border-right: 1px solid var(--border); background: var(--canvas); }
+.docs-version { display: flex; align-items: center; gap: 10px; padding: 0 8px 18px; }
+.docs-version > svg { color: var(--accent); }
+.docs-version span { display: grid; }
+.docs-version strong { font-size: 13px; }
+.docs-version small { color: var(--text-muted); font-size: 11px; }
+.docs-search { height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 10px; margin-bottom: 22px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.docs-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
+.docs-search input { min-width: 0; width: 100%; color: var(--text); border: 0; outline: 0; background: transparent; font-size: 12px; }
+.docs-nav-group { margin-bottom: 20px; }
+.docs-nav-group > strong { display: flex; align-items: center; gap: 8px; padding: 0 8px 6px; color: var(--text); font-size: 12px; }
+.docs-nav-group a { display: block; padding: 6px 8px 6px 31px; color: var(--text-muted); border-radius: 6px; font-size: 12px; text-decoration: none; }
+.docs-nav-group a:hover { color: var(--accent-text); background: var(--surface-selected); }
+.docs-content { overflow: auto; scroll-behavior: smooth; padding: 54px max(32px, calc((100% - 790px) / 2)) 90px; }
+.docs-hero { padding-bottom: 44px; border-bottom: 1px solid var(--border); }
+.docs-status { width: fit-content; display: flex; align-items: center; gap: 6px; padding: 5px 8px; color: #24734c; border: 1px solid color-mix(in srgb, #24734c 25%, transparent); border-radius: 6px; background: color-mix(in srgb, #24734c 8%, var(--surface)); font-size: 11px; font-weight: 700; }
+:root[data-theme="dark"] .docs-status { color: #9bd3ac; }
+.docs-hero h1 { max-width: 14ch; margin: 18px 0 12px; font-size: clamp(36px, 5vw, 58px); line-height: .98; letter-spacing: -.045em; }
+.docs-hero > p { max-width: 65ch; margin: 0; color: var(--text-muted); font-size: 16px; line-height: 1.7; }
+.docs-hero-actions { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+.docs-hero-actions button { display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 13px; color: white; border: 1px solid var(--accent-hover); border-radius: 7px; background: var(--accent); cursor: pointer; font-weight: 700; }
+.docs-hero-actions span { color: var(--text-muted); font-size: 11px; }
+.docs-chapter { padding: 44px 0 0; scroll-margin-top: 20px; }
+.docs-chapter > header { display: flex; align-items: center; gap: 9px; padding-bottom: 13px; border-bottom: 1px solid var(--border); }
+.docs-chapter > header svg { color: var(--accent); }
+.docs-chapter h2 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
+.docs-topic { padding: 30px 0 8px; scroll-margin-top: 18px; }
+.docs-topic h3 { margin: 0; font-size: 18px; }
+.docs-topic .topic-summary { margin: 5px 0 16px; color: var(--text); font-weight: 700; }
+.docs-topic > p:not(.topic-summary) { max-width: 72ch; margin: 0; color: var(--text-secondary); line-height: 1.72; }
+.docs-topic pre { overflow: auto; margin: 18px 0 0; padding: 18px 20px; color: #e9f0f3; border: 1px solid #293943; border-radius: 9px; background: #101820; font: 13px/1.7 Iosevka, "Cascadia Code", Consolas, monospace; }
+.docs-table-wrap { overflow: auto; margin-top: 18px; border: 1px solid var(--border); border-radius: 8px; }
+.docs-topic table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.docs-topic th, .docs-topic td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-soft); }
+.docs-topic th { color: var(--text); background: var(--surface-muted); }
+.docs-topic td { color: var(--text-secondary); font-family: Iosevka, "Cascadia Code", monospace; }
+.docs-topic tr:last-child td { border-bottom: 0; }
+.docs-results { padding-top: 38px; }
+.docs-results h2 { font-size: 18px; }
+.docs-results > a { display: grid; gap: 3px; padding: 14px 0; color: inherit; border-bottom: 1px solid var(--border-soft); text-decoration: none; }
+.docs-results small, .docs-results span { color: var(--text-muted); }
+.docs-results small { font-size: 10px; }
+.docs-results span { font-size: 12px; }
+.docs-footer { display: flex; align-items: center; gap: 9px; margin-top: 52px; padding-top: 20px; color: var(--text-muted); border-top: 1px solid var(--border); font-size: 12px; }
+
 .guide-layout { min-height: 0; display: grid; grid-template-columns: 230px minmax(0, 1fr); overflow: hidden; background: var(--canvas); }
 .guide-nav { overflow: auto; padding: 28px 18px; border-right: 1px solid var(--border); background: var(--surface-muted); }
 .guide-nav > strong { display: block; margin: 0 8px 13px; font-size: 12px; }
@@ -116,7 +171,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .guide-note { display: flex; align-items: center; gap: 9px; margin-top: 44px; padding-top: 18px; color: var(--text-muted); border-top: 1px solid var(--border); font-size: 12px; }
 
 @media (max-width: 1050px) {
-  .topbar { grid-template-columns: 210px 1fr auto; padding: 0 10px; }
+  .topbar { grid-template-columns: auto 1fr auto; padding: 0 10px; }
   .brand small, .language-button { display: none; }
   .view-switcher button { padding: 0 8px; }
 }
@@ -132,7 +187,18 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .guide-layout { grid-template-columns: 1fr; }
   .guide-nav { display: none; }
   .guide-content { padding: 30px 22px 60px; }
+  .docs-shell { grid-template-columns: 230px minmax(0, 1fr); }
+  .docs-content { padding-inline: 30px; }
   .new-dialog fieldset { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .toolbar-divider, .preferences, .file-actions .icon-button { display: none; }
+  .docs-shell { grid-template-columns: 1fr; }
+  .docs-sidebar { display: none; }
+  .docs-content { padding: 32px 20px 60px; }
+  .docs-hero h1 { font-size: 39px; }
+  .docs-hero-actions { align-items: flex-start; flex-direction: column; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

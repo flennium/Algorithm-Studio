@@ -1,8 +1,20 @@
 import Editor, { type Monaco, type OnMount } from "@monaco-editor/react";
 import type { editor as MonacoEditor } from "monaco-editor";
 import {
-  BookOpen, CircleAlert, Code2, FileCode2, FolderOpen, Languages, Moon, Play,
-  Plus, Save, Sun, TerminalSquare, X,
+  BookOpen,
+  CircleAlert,
+  Code2,
+  FileCode2,
+  FolderOpen,
+  Keyboard,
+  Languages,
+  Moon,
+  Play,
+  Plus,
+  Save,
+  Sun,
+  TerminalSquare,
+  X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { run, type Diagnostic, type RunResult } from "../../language";
@@ -28,7 +40,9 @@ Fin`;
 function initialTheme(): Theme {
   const saved = localStorage.getItem("algorithm-studio-theme");
   if (saved === "light" || saved === "dark") return saved;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 function initialLocale(): Locale {
@@ -55,7 +69,11 @@ export default function App(): React.JSX.Element {
   const [source, setSource] = useState(exampleSource);
   const [documentPath, setDocumentPath] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState("programme");
-  const [result, setResult] = useState<RunResult>({ output: [], diagnostics: [], variables: {} });
+  const [result, setResult] = useState<RunResult>({
+    output: [],
+    diagnostics: [],
+    variables: {},
+  });
   const [hasRun, setHasRun] = useState(false);
   const [theme, setTheme] = useState<Theme>(initialTheme);
   const [locale, setLocale] = useState<Locale>(initialLocale);
@@ -63,6 +81,10 @@ export default function App(): React.JSX.Element {
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [starter, setStarter] = useState<Starter>("blank");
+  const [inputValues, setInputValues] = useState<
+    Array<number | string | boolean>
+  >([]);
+  const [inputValue, setInputValue] = useState("");
   const monacoRef = useRef<Monaco | null>(null);
   const modelRef = useRef<MonacoEditor.ITextModel | null>(null);
   const editorRef = useRef<MonacoEditor.IStandaloneCodeEditor | null>(null);
@@ -91,22 +113,50 @@ export default function App(): React.JSX.Element {
     const monaco = monacoRef.current;
     const model = modelRef.current;
     if (!monaco || !model) return;
-    monaco.editor.setModelMarkers(model, "algorithm", diagnostics.map((diagnostic) => ({
-      severity: monaco.MarkerSeverity.Error,
-      message: diagnostic.suggestion ? `${diagnostic.message}\n${diagnostic.suggestion}` : diagnostic.message,
-      code: diagnostic.code,
-      startLineNumber: diagnostic.span.start.line,
-      startColumn: diagnostic.span.start.column,
-      endLineNumber: diagnostic.span.end.line,
-      endColumn: Math.max(diagnostic.span.end.column, diagnostic.span.start.column + 1),
-    })));
+    monaco.editor.setModelMarkers(
+      model,
+      "algorithm",
+      diagnostics.map((diagnostic) => ({
+        severity: monaco.MarkerSeverity.Error,
+        message: diagnostic.suggestion
+          ? `${diagnostic.message}\n${diagnostic.suggestion}`
+          : diagnostic.message,
+        code: diagnostic.code,
+        startLineNumber: diagnostic.span.start.line,
+        startColumn: diagnostic.span.start.column,
+        endLineNumber: diagnostic.span.end.line,
+        endColumn: Math.max(
+          diagnostic.span.end.column,
+          diagnostic.span.start.column + 1,
+        ),
+      })),
+    );
   }
 
-  function execute(): void {
-    const next = run(source, locale);
+  function executeWithInputs(inputs: Array<number | string | boolean>): void {
+    const next = run(source, locale, inputs);
     setResult(next);
     setHasRun(true);
     showDiagnostics(next.diagnostics);
+  }
+
+  function execute(): void {
+    setInputValues([]);
+    setInputValue("");
+    executeWithInputs([]);
+  }
+
+  function submitInput(): void {
+    if (!result.inputRequest) return;
+    const type = result.inputRequest.type;
+    let value: number | string | boolean = inputValue;
+    if (type === "Entier" || type === "Reel") value = Number(inputValue);
+    if (type === "Booleen")
+      value = ["vrai", "true", "1"].includes(inputValue.trim().toLowerCase());
+    const nextInputs = [...inputValues, value];
+    setInputValues(nextInputs);
+    setInputValue("");
+    executeWithInputs(nextInputs);
   }
 
   const mountEditor: OnMount = (editor, monaco) => {
@@ -114,8 +164,10 @@ export default function App(): React.JSX.Element {
     monacoRef.current = monaco;
     modelRef.current = editor.getModel();
     editor.addAction({
-      id: "algorithm.run", label: copy.run,
-      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter], run: execute,
+      id: "algorithm.run",
+      label: copy.run,
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+      run: execute,
     });
   };
 
@@ -130,7 +182,9 @@ export default function App(): React.JSX.Element {
     if (!document) return;
     setSource(document.content);
     setDocumentPath(document.path);
-    setDocumentName(fileName(document.path, "programme").replace(/\.(algo|alg|txt)$/i, ""));
+    setDocumentName(
+      fileName(document.path, "programme").replace(/\.(algo|alg|txt)$/i, ""),
+    );
     resetRun();
     setView("editor");
   }
@@ -156,7 +210,10 @@ export default function App(): React.JSX.Element {
     setView("editor");
     requestAnimationFrame(() => {
       editorRef.current?.revealLineInCenter(diagnostic.span.start.line);
-      editorRef.current?.setPosition({ lineNumber: diagnostic.span.start.line, column: diagnostic.span.start.column });
+      editorRef.current?.setPosition({
+        lineNumber: diagnostic.span.start.line,
+        column: diagnostic.span.start.column,
+      });
       editorRef.current?.focus();
     });
   }
@@ -164,76 +221,333 @@ export default function App(): React.JSX.Element {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <button className="brand" onClick={() => setView("editor")} aria-label="Algorithm Studio">
-          <span className="brand-mark" aria-hidden="true"><Code2 size={20} /></span>
-          <span><strong>Algorithm Studio</strong><small>{copy.tagline}</small></span>
+        <button
+          className="brand"
+          onClick={() => setView("editor")}
+          aria-label="Algorithm Studio"
+        >
+          <span className="brand-mark" aria-hidden="true">
+            <Code2 size={20} />
+          </span>
+          <span>
+            <strong>Algorithm Studio</strong>
+            <small>{copy.tagline}</small>
+          </span>
         </button>
         <nav className="view-switcher" aria-label="Navigation">
-          <button className={view === "editor" ? "active" : ""} onClick={() => setView("editor")}><FileCode2 size={16} />{copy.editor}</button>
-          <button className={view === "guide" ? "active" : ""} onClick={() => setView("guide")}><BookOpen size={16} />{copy.guide}</button>
+          <button
+            className={view === "editor" ? "active" : ""}
+            onClick={() => setView("editor")}
+          >
+            <FileCode2 size={16} />
+            {copy.editor}
+          </button>
+          <button
+            className={view === "guide" ? "active" : ""}
+            onClick={() => setView("guide")}
+          >
+            <BookOpen size={16} />
+            {copy.guide}
+          </button>
         </nav>
         <div className="toolbar">
-          <button className="primary-quiet" onClick={() => setNewDialogOpen(true)}><Plus size={17} />{copy.newProgram}</button>
-          <button className="icon-button" onClick={() => void openDocument()} aria-label={copy.open} title={copy.open}><FolderOpen size={17} /></button>
-          <button className="icon-button" onClick={() => void saveDocument()} aria-label={copy.save} title={copy.save}><Save size={17} /></button>
-          <button className="language-button" onClick={() => setLocale((current) => current === "fr" ? "en" : "fr")}><Languages size={16} />{copy.language}</button>
-          <button className="icon-button" aria-label={theme === "dark" ? copy.themeLight : copy.themeDark} title={theme === "dark" ? copy.themeLight : copy.themeDark} onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}>
-            {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
-          </button>
-          {view === "editor" && <button className="run-button" onClick={execute}><Play size={17} fill="currentColor" />{copy.run}</button>}
+          <div className="toolbar-group file-actions">
+            <button
+              className="primary-quiet"
+              onClick={() => setNewDialogOpen(true)}
+            >
+              <Plus size={17} />
+              {copy.newProgram}
+            </button>
+            <button
+              className="icon-button"
+              onClick={() => void openDocument()}
+              aria-label={copy.open}
+              title={copy.open}
+            >
+              <FolderOpen size={17} />
+            </button>
+            <button
+              className="icon-button"
+              onClick={() => void saveDocument()}
+              aria-label={copy.save}
+              title={copy.save}
+            >
+              <Save size={17} />
+            </button>
+          </div>
+          <div className="toolbar-divider" />
+          <div className="toolbar-group preferences">
+            <button
+              className="language-button"
+              onClick={() =>
+                setLocale((current) => (current === "fr" ? "en" : "fr"))
+              }
+            >
+              <Languages size={16} />
+              {copy.language}
+            </button>
+            <button
+              className="icon-button"
+              aria-label={theme === "dark" ? copy.themeLight : copy.themeDark}
+              title={theme === "dark" ? copy.themeLight : copy.themeDark}
+              onClick={() =>
+                setTheme((current) => (current === "dark" ? "light" : "dark"))
+              }
+            >
+              {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+          </div>
+          {view === "editor" && (
+            <button className="run-button" onClick={execute}>
+              <Play size={17} fill="currentColor" />
+              {copy.run}
+            </button>
+          )}
         </div>
       </header>
 
-      {view === "guide" ? <LanguageGuide locale={locale} onOpenEditor={() => setView("editor")} /> : (
+      {view === "guide" ? (
+        <LanguageGuide locale={locale} onOpenEditor={() => setView("editor")} />
+      ) : (
         <>
           <section className="editor-workspace">
             <div className="editor-pane" aria-label={copy.editor}>
               <div className="pane-bar">
-                <span><FileCode2 size={15} />{fileName(documentPath, documentName)}{!documentPath && <em>{copy.fileUnsaved}</em>}</span>
-                <span className={result.diagnostics.length ? "status error" : "status"}>
-                  {result.diagnostics.length ? <CircleAlert size={14} /> : <span className="status-dot" />}{status}
+                <span>
+                  <FileCode2 size={15} />
+                  {fileName(documentPath, documentName)}
+                  {!documentPath && <em>{copy.fileUnsaved}</em>}
+                </span>
+                <span
+                  className={
+                    result.diagnostics.length ? "status error" : "status"
+                  }
+                >
+                  {result.diagnostics.length ? (
+                    <CircleAlert size={14} />
+                  ) : (
+                    <span className="status-dot" />
+                  )}
+                  {status}
                 </span>
               </div>
               <div className="editor-wrap">
-                <Editor defaultLanguage="algorithm" beforeMount={registerAlgorithmLanguage} onMount={mountEditor}
-                  onChange={(value) => setSource(value ?? "")} value={source}
+                <Editor
+                  defaultLanguage="algorithm"
+                  beforeMount={registerAlgorithmLanguage}
+                  onMount={mountEditor}
+                  onChange={(value) => setSource(value ?? "")}
+                  value={source}
                   theme={theme === "dark" ? "algorithm-night" : "algorithm-day"}
-                  options={{ automaticLayout: true, fontFamily: "Iosevka, Cascadia Code, Consolas, monospace", fontSize: 15, lineHeight: 24, minimap: { enabled: false }, padding: { top: 20 }, renderLineHighlight: "all", scrollBeyondLastLine: false, tabSize: 4 }} />
+                  options={{
+                    automaticLayout: true,
+                    fontFamily: "Iosevka, Cascadia Code, Consolas, monospace",
+                    fontSize: 15,
+                    lineHeight: 24,
+                    minimap: { enabled: false },
+                    padding: { top: 20 },
+                    renderLineHighlight: "all",
+                    scrollBeyondLastLine: false,
+                    tabSize: 4,
+                  }}
+                />
               </div>
             </div>
           </section>
 
           <section className="bottom-panel">
             <div className="console-title">
-              <span><TerminalSquare size={16} /><strong>{copy.output}</strong></span>
-              {result.diagnostics.length > 0 && <span className="problem-count"><CircleAlert size={14} />{result.diagnostics.length} {copy.problems}</span>}
+              <span>
+                <TerminalSquare size={16} />
+                <strong>{copy.output}</strong>
+              </span>
+              {result.diagnostics.length > 0 && (
+                <span className="problem-count">
+                  <CircleAlert size={14} />
+                  {result.diagnostics.length} {copy.problems}
+                </span>
+              )}
               <small>{copy.keyboardRun}</small>
             </div>
             <div className="console-output" aria-live="polite">
-              {result.diagnostics.length > 0 ? <div className="problems-list">
-                {result.diagnostics.map((diagnostic) => <button className="problem-card" onClick={() => revealDiagnostic(diagnostic)} key={`${diagnostic.code}-${diagnostic.span.start.offset}`}>
-                  <CircleAlert size={18} /><span><strong>{diagnostic.message}</strong>
-                    <small>{diagnostic.code} · {format(copy.problemAt, { line: diagnostic.span.start.line, column: diagnostic.span.start.column })}</small>
-                    {diagnostic.suggestion && <em><b>{copy.suggestion}:</b> {diagnostic.suggestion}</em>}</span>
-                </button>)}
-              </div> : result.output.length > 0 ? result.output.map((line, index) => <div key={`${line}-${index}`}><span className="prompt">›</span>{line}</div>) : <span className="muted">{hasRun ? copy.noProblems : copy.emptyOutput}</span>}
+              {result.diagnostics.length > 0 ? (
+                <div className="problems-list">
+                  {result.diagnostics.map((diagnostic) => (
+                    <button
+                      className="problem-card"
+                      onClick={() => revealDiagnostic(diagnostic)}
+                      key={`${diagnostic.code}-${diagnostic.span.start.offset}`}
+                    >
+                      <CircleAlert size={18} />
+                      <span>
+                        <strong>{diagnostic.message}</strong>
+                        <small>
+                          {diagnostic.code} ·{" "}
+                          {format(copy.problemAt, {
+                            line: diagnostic.span.start.line,
+                            column: diagnostic.span.start.column,
+                          })}
+                        </small>
+                        {diagnostic.suggestion && (
+                          <em>
+                            <b>{copy.suggestion}:</b> {diagnostic.suggestion}
+                          </em>
+                        )}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : result.output.length > 0 ? (
+                result.output.map((line, index) => (
+                  <div key={`${line}-${index}`}>
+                    <span className="prompt">›</span>
+                    {line}
+                  </div>
+                ))
+              ) : (
+                <span className="muted">
+                  {hasRun ? copy.noProblems : copy.emptyOutput}
+                </span>
+              )}
             </div>
           </section>
         </>
       )}
 
-      {newDialogOpen && <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setNewDialogOpen(false)}>
-        <section className="new-dialog" role="dialog" aria-modal="true" aria-labelledby="new-program-title">
-          <button className="dialog-close" onClick={() => setNewDialogOpen(false)} aria-label={copy.cancel}><X size={18} /></button>
-          <div className="dialog-symbol"><Plus size={21} /></div><h2 id="new-program-title">{copy.newTitle}</h2><p>{copy.newDescription}</p>
-          <label>{copy.programName}<input autoFocus value={newName} placeholder={copy.programPlaceholder} onChange={(event) => setNewName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && createProgram()} /></label>
-          <fieldset><legend>{copy.template}</legend>
-            <label className={starter === "blank" ? "selected" : ""}><input type="radio" name="starter" checked={starter === "blank"} onChange={() => setStarter("blank")} /><FileCode2 size={18} /><span><strong>{copy.blank}</strong><small>Algorithme · Debut · Fin</small></span></label>
-            <label className={starter === "example" ? "selected" : ""}><input type="radio" name="starter" checked={starter === "example"} onChange={() => setStarter("example")} /><Code2 size={18} /><span><strong>{copy.example}</strong><small>Variable · Calcul · Ecrire</small></span></label>
-          </fieldset>
-          <div className="dialog-actions"><button onClick={() => setNewDialogOpen(false)}>{copy.cancel}</button><button className="create-button" onClick={createProgram}><Plus size={17} />{copy.create}</button></div>
-        </section>
-      </div>}
+      {newDialogOpen && (
+        <div
+          className="dialog-backdrop"
+          role="presentation"
+          onMouseDown={(event) =>
+            event.target === event.currentTarget && setNewDialogOpen(false)
+          }
+        >
+          <section
+            className="new-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-program-title"
+          >
+            <button
+              className="dialog-close"
+              onClick={() => setNewDialogOpen(false)}
+              aria-label={copy.cancel}
+            >
+              <X size={18} />
+            </button>
+            <div className="dialog-symbol">
+              <Plus size={21} />
+            </div>
+            <h2 id="new-program-title">{copy.newTitle}</h2>
+            <p>{copy.newDescription}</p>
+            <label>
+              {copy.programName}
+              <input
+                autoFocus
+                value={newName}
+                placeholder={copy.programPlaceholder}
+                onChange={(event) => setNewName(event.target.value)}
+                onKeyDown={(event) => event.key === "Enter" && createProgram()}
+              />
+            </label>
+            <fieldset>
+              <legend>{copy.template}</legend>
+              <label className={starter === "blank" ? "selected" : ""}>
+                <input
+                  type="radio"
+                  name="starter"
+                  checked={starter === "blank"}
+                  onChange={() => setStarter("blank")}
+                />
+                <FileCode2 size={18} />
+                <span>
+                  <strong>{copy.blank}</strong>
+                  <small>Algorithme · Debut · Fin</small>
+                </span>
+              </label>
+              <label className={starter === "example" ? "selected" : ""}>
+                <input
+                  type="radio"
+                  name="starter"
+                  checked={starter === "example"}
+                  onChange={() => setStarter("example")}
+                />
+                <Code2 size={18} />
+                <span>
+                  <strong>{copy.example}</strong>
+                  <small>Variable · Calcul · Ecrire</small>
+                </span>
+              </label>
+            </fieldset>
+            <div className="dialog-actions">
+              <button onClick={() => setNewDialogOpen(false)}>
+                {copy.cancel}
+              </button>
+              <button className="create-button" onClick={createProgram}>
+                <Plus size={17} />
+                {copy.create}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {result.inputRequest && (
+        <div className="dialog-backdrop input-backdrop" role="presentation">
+          <section
+            className="input-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="input-title"
+          >
+            <div className="dialog-symbol">
+              <Keyboard size={21} />
+            </div>
+            <div>
+              <h2 id="input-title">
+                {locale === "fr"
+                  ? "Le programme attend une valeur"
+                  : "The program is waiting for a value"}
+              </h2>
+              <p>
+                {locale === "fr" ? (
+                  <>
+                    Saisissez <strong>{result.inputRequest.name}</strong> au
+                    format <code>{result.inputRequest.type}</code>.
+                  </>
+                ) : (
+                  <>
+                    Enter <strong>{result.inputRequest.name}</strong> as{" "}
+                    <code>{result.inputRequest.type}</code>.
+                  </>
+                )}
+              </p>
+            </div>
+            <input
+              autoFocus
+              value={inputValue}
+              onChange={(event) => setInputValue(event.target.value)}
+              onKeyDown={(event) => event.key === "Enter" && submitInput()}
+            />
+            <div className="dialog-actions">
+              <button
+                onClick={() =>
+                  setResult((current) => ({
+                    ...current,
+                    inputRequest: undefined,
+                  }))
+                }
+              >
+                {copy.cancel}
+              </button>
+              <button className="create-button" onClick={submitInput}>
+                {locale === "fr" ? "Continuer" : "Continue"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

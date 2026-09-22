@@ -50,6 +50,15 @@ export function registerAlgorithmLanguage(monaco: Monaco): void {
       "Mod",
       "Vrai",
       "Faux",
+      "Tableau",
+      "De",
+      "Fonction",
+      "FinFonction",
+      "Procedure",
+      "Procédure",
+      "FinProcedure",
+      "FinProcédure",
+      "Retourner",
     ],
     typeKeywords: ["Entier", "Reel", "Réel", "Chaine", "Chaîne", "Caractere", "Caractère", "Booleen", "Booléen"],
     tokenizer: {
@@ -76,7 +85,7 @@ export function registerAlgorithmLanguage(monaco: Monaco): void {
         startLineNumber: position.lineNumber,
         endLineNumber: position.lineNumber,
       };
-      const words = ["Algorithme", "Constantes", "Variables", "Debut", "Fin", "Ecrire", "Si", "Alors", "Sinon", "FinSi", "Pour", "Faire", "FinPour", "TantQue", "FinTantQue", "Repeter", "JusquA", "Entier", "Reel", "Chaine", "Caractere", "Booleen"];
+      const words = ["Algorithme", "Constantes", "Variables", "Debut", "Fin", "Lire", "Ecrire", "Si", "Alors", "Sinon", "Sinon Si", "FinSi", "Pour", "Faire", "FinPour", "TantQue", "FinTantQue", "Repeter", "JusquA", "Tableau", "Fonction", "FinFonction", "Procedure", "FinProcedure", "Retourner", "Entier", "Reel", "Chaine", "Caractere", "Booleen"];
       return {
         suggestions: words.map((label) => ({
           label,

@@ -15,16 +15,17 @@ Use it online at [flennium.github.io/Algorithm-Studio](https://flennium.github.i
 - Create a named `.algo` program from inside the app.
 - Open and save `.algo`, `.alg`, and plain-text source files.
 - Highlight Algorithm syntax and complete common keywords.
-- Run constants, scalar declarations, arithmetic and Boolean expressions,
-  decisions, the three standard loop forms, comments, and `Ecrire`.
+- Run typed input/output, arrays and matrices, arithmetic and Boolean
+  expressions, decisions, all three standard loop forms, functions,
+  procedures, local scope, and recursion.
 - Explain syntax and runtime errors at the relevant line and column.
 - Read the language guide without leaving the editor.
 - Use the interface in French or English. French is the default.
 - Follow the system light or dark theme, with a manual override.
 
-The executable core is deliberately honest about its boundary. Interactive
-input, arrays, procedures, functions, files, and drawing are documented as
-future language work rather than presented as working features.
+The stable 1.0 core covers the procedural concepts used throughout
+introductory algorithm courses. Platform-specific records, files, pointers,
+dynamic structures, and drawing remain outside the portable language core.
 
 ## Install
 

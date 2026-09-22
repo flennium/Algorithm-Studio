@@ -7,7 +7,7 @@ describe("program grammar and diagnostics", () => {
     ["Algorithme Test\nEcrire(1)\nFin", "ALG-P101"],
     ["Algorithme Test\nDebut\nEcrire(1)", "ALG-P102"],
     ["Algorithme Test\nVariables\nx Nombre\nDebut\nFin", "ALG-P104"],
-    ["Algorithme Test\nDebut\nAfficher(1)\nFin", "ALG-P105"],
+    ["Algorithme Test\nDebut\nAfficher(1)\nFin", "ALG-S110"],
     ["Algorithme Test\nDebut\nEcrire(1 +)\nFin", "ALG-P106"],
     ["Algorithme Test\nConstantes\nINVALIDE\nDebut\nFin", "ALG-P110"],
   ])("reports %s as %s", (source, code) => expect(run(source).diagnostics[0]?.code).toBe(code));
