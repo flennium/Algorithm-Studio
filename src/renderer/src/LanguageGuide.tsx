@@ -4,11 +4,13 @@ import {
   Calculator,
   Check,
   ChevronRight,
+  Clipboard,
   Code2,
   Database,
   GitBranch,
   Keyboard,
   ListChecks,
+  Map,
   Search,
   Workflow,
 } from "lucide-react";
@@ -74,6 +76,60 @@ function AlgorithmCode({ children }: { children: string }): React.JSX.Element {
   );
 }
 
+function CodeExample({ code, locale }: { code: string; locale: Locale }): React.JSX.Element {
+  const [copied, setCopied] = useState(false);
+  const copy = async (): Promise<void> => {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1400);
+  };
+  return (
+    <div className="docs-code-block">
+      <div className="docs-code-bar">
+        <span><i /> exemple.algo</span>
+        <button onClick={copy} type="button">
+          {copied ? <Check size={13} /> : <Clipboard size={13} />}
+          {copied ? (locale === "fr" ? "Copié" : "Copied") : (locale === "fr" ? "Copier" : "Copy")}
+        </button>
+      </div>
+      <pre><AlgorithmCode>{code}</AlgorithmCode></pre>
+    </div>
+  );
+}
+
+const topicExtras: Record<Locale, Record<string, { points: string[]; note: string }>> = {
+  fr: {
+    program: { points: ["L’en-tête Algorithme est obligatoire.", "Les déclarations précèdent toujours Debut.", "Fin ferme uniquement le programme principal."], note: "Commencez petit : un nom, Debut, une instruction, puis Fin." },
+    comments: { points: ["Le texte après // n’est jamais exécuté.", "Un identifiant ne commence pas par un chiffre.", "Les accents sont acceptés dans les noms."], note: "Préférez totalNotes à x : le code doit pouvoir se relire comme une explication." },
+    types: { points: ["Entier et Reel servent aux calculs.", "Chaine contient du texte ; Caractere contient une seule lettre.", "Booleen ne peut valoir que Vrai ou Faux."], note: "Choisissez le type le plus précis. Un âge est un Entier, une moyenne est un Reel." },
+    arrays: { points: ["Les bornes font partie de la déclaration.", "Une matrice utilise un indice par dimension.", "Chaque accès est contrôlé pendant l’exécution."], note: "Tableau[1..10] possède dix cases, de 1 à 10 incluses." },
+    operators: { points: ["DIV produit un quotient entier ; / produit un Reel.", "MOD donne le reste d’une division entière.", "Ajoutez des parenthèses lorsque l’intention n’est pas évidente."], note: "NON est évalué avant ET, et ET avant OU." },
+    library: { points: ["Les fonctions de texte ne modifient pas la variable d’origine.", "Racine refuse un nombre négatif.", "Min et Max attendent exactement deux nombres."], note: "Une fonction standard s’utilise partout où une valeur est attendue." },
+    "read-write": { points: ["Lire vérifie le type avant de continuer.", "Ecrire accepte plusieurs expressions séparées par des virgules.", "Une lecture peut cibler une case de tableau."], note: "Ajoutez un message avec Ecrire avant Lire pour expliquer la valeur attendue." },
+    conditions: { points: ["La condition doit produire Vrai ou Faux.", "Une seule branche est exécutée.", "Sinon et Sinon Si sont facultatifs."], note: "Placez d’abord le cas le plus précis, puis terminez par le cas général." },
+    loops: { points: ["Pour convient quand le nombre de passages est connu.", "TantQue peut ne jamais exécuter son corps.", "Repeter exécute toujours son corps au moins une fois."], note: "Toute boucle doit modifier une valeur capable de rendre sa condition fausse." },
+    functions: { points: ["Les paramètres sont locaux à chaque appel.", "Retourner termine immédiatement la fonction.", "Le résultat doit respecter le type annoncé."], note: "Utilisez une fonction lorsqu’un calcul produit une valeur réutilisable." },
+    procedures: { points: ["Une procédure réalise une action sans produire de valeur.", "Ses paramètres sont séparés par des points-virgules.", "Ses variables locales disparaissent après l’appel."], note: "Utilisez une procédure pour nommer une suite d’actions répétée." },
+    diagnostics: { points: ["ALG-P : la structure du code est invalide.", "ALG-S : une valeur ou un type est mal utilisé.", "ALG-R : un problème apparaît pendant l’exécution."], note: "Lisez d’abord la ligne indiquée, puis la suggestion. Le premier diagnostic est souvent la cause des suivants." },
+    scope: { points: ["Une variable locale masque une variable globale du même nom.", "Les tableaux ont des dimensions fixes.", "La limite d’instructions arrête les boucles infinies."], note: "Le noyau 1.0 privilégie les notions communes aux cursus universitaires." },
+  },
+  en: {
+    program: { points: ["The Algorithme header is required.", "Declarations always appear before Debut.", "Fin closes the main program only."], note: "Start small: a name, Debut, one statement, then Fin." },
+    comments: { points: ["Text after // is never executed.", "An identifier cannot start with a digit.", "Accented letters are accepted in names."], note: "Prefer totalNotes over x: code should read like an explanation." },
+    types: { points: ["Entier and Reel are numeric types.", "Chaine stores text; Caractere stores one character.", "Booleen can only be Vrai or Faux."], note: "Choose the most precise type. An age is an Entier; an average is a Reel." },
+    arrays: { points: ["Bounds are part of the declaration.", "A matrix uses one index per dimension.", "Every access is checked while running."], note: "Tableau[1..10] contains ten elements, from 1 through 10." },
+    operators: { points: ["DIV returns an integer quotient; / returns a Reel.", "MOD returns the remainder of integer division.", "Use parentheses whenever intent is not obvious."], note: "NON is evaluated before ET, and ET before OU." },
+    library: { points: ["Text functions do not change the original variable.", "Racine rejects negative numbers.", "Min and Max require exactly two numbers."], note: "A standard function can be used anywhere a value is expected." },
+    "read-write": { points: ["Lire validates the type before continuing.", "Ecrire accepts several comma-separated expressions.", "Input may target an array element."], note: "Use Ecrire before Lire to explain which value is expected." },
+    conditions: { points: ["The condition must produce Vrai or Faux.", "Only one branch is executed.", "Sinon and Sinon Si are optional."], note: "Put the most specific case first and finish with the general case." },
+    loops: { points: ["Use Pour when the iteration count is known.", "TantQue may never execute its body.", "Repeter always executes its body at least once."], note: "Every loop must change a value that can eventually make its condition false." },
+    functions: { points: ["Parameters are local to each call.", "Retourner ends the function immediately.", "The result must match the declared type."], note: "Use a function when a calculation produces a reusable value." },
+    procedures: { points: ["A procedure performs an action without returning a value.", "Its parameters are separated with semicolons.", "Its local variables disappear after the call."], note: "Use a procedure to name a repeated sequence of actions." },
+    diagnostics: { points: ["ALG-P: the code structure is invalid.", "ALG-S: a value or type is misused.", "ALG-R: a problem occurred while running."], note: "Read the reported line, then the suggestion. The first diagnostic often causes the others." },
+    scope: { points: ["A local variable hides a global variable with the same name.", "Array dimensions are fixed.", "The instruction limit stops infinite loops."], note: "The 1.0 core prioritizes concepts shared by university curricula." },
+  },
+};
+
 const content: Record<Locale, Chapter[]> = {
   fr: [
     {
@@ -93,6 +149,9 @@ const content: Record<Locale, Chapter[]> = {
           title: "Commentaires et identifiants",
           summary: "Écrire un code lisible en Unicode.",
           body: "Un commentaire commence par // et se termine avec la ligne. Les identifiants peuvent contenir des lettres Unicode, des chiffres après le premier caractère et le soulignement _.",
+          code: `// Le prix final inclut la remise
+prixFinal <- prixInitial - remise
+Ecrire("Prix : ", prixFinal)`,
         },
       ],
     },
@@ -144,6 +203,23 @@ const content: Record<Locale, Chapter[]> = {
             ["Logique", "ET  OU"],
           ],
           code: `admis <- moyenne >= 10 ET absences < 5\nreste <- total MOD 2\nquotient <- total DIV 2`,
+        },
+        {
+          id: "library",
+          title: "Fonctions standard",
+          summary: "Des opérations fiables pour les nombres et le texte.",
+          body: "Le noyau fournit un petit vocabulaire commun. Longueur compte les caractères ; Majuscule et Minuscule transforment la casse ; Abs, Racine et Arrondi travaillent sur les nombres ; Min et Max comparent deux valeurs.",
+          table: [
+            ["Fonction", "Entrée", "Résultat"],
+            ["Longueur(texte)", "Chaine", "Entier"],
+            ["Majuscule / Minuscule", "Chaine", "Chaine"],
+            ["Abs / Racine / Arrondi", "Nombre", "Nombre"],
+            ["Min / Max", "Deux nombres", "Nombre"],
+          ],
+          code: `titre <- Majuscule("algorithme")
+distance <- Abs(-12)
+racine <- Racine(81)
+Ecrire(titre, " : ", distance, " / ", racine)`,
         },
       ],
     },
@@ -215,6 +291,11 @@ const content: Record<Locale, Chapter[]> = {
           summary:
             "Chaque erreur indique une catégorie, une ligne et une correction possible.",
           body: "Les codes ALG-P concernent la syntaxe, ALG-S le sens du programme et les types, ALG-R les problèmes rencontrés pendant l’exécution. La limite de 100 000 instructions protège l’application des boucles infinies.",
+          code: `Variables
+    age : Entier
+Debut
+    age <- "vingt" // ALG-S106 : type incompatible
+Fin`,
         },
         {
           id: "scope",
@@ -254,6 +335,11 @@ const english: Record<string, [string, string, string]> = {
     "Operators and precedence",
     "Arithmetic, comparison, and Boolean logic.",
     "Parentheses come first, followed by unary operators, multiplication, addition, comparisons, ET, and finally OU. Standard functions are Longueur, Majuscule, Minuscule, Abs, Racine, Arrondi, Min, and Max.",
+  ],
+  library: [
+    "Standard functions",
+    "Reliable operations for numbers and text.",
+    "The core provides a small shared vocabulary. Longueur counts characters; Majuscule and Minuscule change case; Abs, Racine, and Arrondi work with numbers; Min and Max compare two values.",
   ],
   "read-write": [
     "Lire and Ecrire",
@@ -378,30 +464,56 @@ export function LanguageGuide({
       </aside>
       <article className="docs-content">
         <header className="docs-hero">
-          <div className="docs-status">
-            <Check size={14} />
-            {locale === "fr"
-              ? "Référence stable · version 1.0"
-              : "Stable reference · version 1.0"}
-          </div>
-          <h1>
-            {locale === "fr"
-              ? "Le langage Algorithm"
-              : "The Algorithm language"}
-          </h1>
-          <p>
-            {locale === "fr"
-              ? "La référence complète du dialecte exécuté par Algorithm Studio. Chaque syntaxe présentée ici fonctionne dans l’éditeur de bureau et sur le web."
-              : "The complete reference for the dialect executed by Algorithm Studio. Every syntax shown here works in both the desktop and web editors."}
-          </p>
-          <div className="docs-hero-actions">
-            <button onClick={onOpenEditor}>
-              {locale === "fr" ? "Ouvrir l’éditeur" : "Open the editor"}
-              <ChevronRight size={16} />
-            </button>
-            <span>95 tests · 5 types · 3 boucles</span>
+          <div className="docs-hero-grid">
+            <div>
+              <div className="docs-status">
+                <Check size={14} />
+                {locale === "fr"
+                  ? "Référence stable · version 1.0"
+                  : "Stable reference · version 1.0"}
+              </div>
+              <h1>
+                {locale === "fr"
+                  ? "Apprendre à penser en algorithmes"
+                  : "Learn to think in algorithms"}
+              </h1>
+              <p>
+                {locale === "fr"
+                  ? "Une référence faite pour comprendre, pas seulement pour chercher une syntaxe. Lisez un concept, observez le code, puis essayez-le dans l’éditeur."
+                  : "A reference designed for understanding, not only syntax lookup. Read a concept, inspect the code, then try it in the editor."}
+              </p>
+              <div className="docs-hero-actions">
+                <button onClick={onOpenEditor}>
+                  {locale === "fr" ? "Écrire mon premier programme" : "Write my first program"}
+                  <ChevronRight size={16} />
+                </button>
+                <span>95 tests · 5 types · 3 boucles</span>
+              </div>
+            </div>
+            <div className="docs-hero-code" aria-label={locale === "fr" ? "Anatomie d’un programme" : "Program anatomy"}>
+              <div className="hero-code-label"><span>01</span>{locale === "fr" ? "Nommer" : "Name it"}</div>
+              <div className="hero-code-line"><b>Algorithme</b> Bienvenue</div>
+              <div className="hero-code-label"><span>02</span>{locale === "fr" ? "Déclarer" : "Declare"}</div>
+              <div className="hero-code-line"><b>Variables</b><br />&nbsp;&nbsp;message : <em>Chaine</em></div>
+              <div className="hero-code-label"><span>03</span>{locale === "fr" ? "Exécuter" : "Run"}</div>
+              <div className="hero-code-line"><b>Debut</b><br />&nbsp;&nbsp;message <i>&lt;-</i> <q>"Bonjour"</q><br />&nbsp;&nbsp;<u>Ecrire</u>(message)<br /><b>Fin</b></div>
+            </div>
           </div>
         </header>
+        <section className="docs-path" aria-labelledby="learning-path-title">
+          <header>
+            <Map size={18} />
+            <div>
+              <h2 id="learning-path-title">{locale === "fr" ? "Votre parcours" : "Your learning path"}</h2>
+              <p>{locale === "fr" ? "Suivez l’ordre ou allez directement au concept dont vous avez besoin." : "Follow the sequence or jump directly to the concept you need."}</p>
+            </div>
+          </header>
+          <div>
+            <a href="#program"><span>1</span><strong>{locale === "fr" ? "Construire" : "Build"}</strong><small>{locale === "fr" ? "Structure, données et expressions" : "Structure, data, and expressions"}</small></a>
+            <a href="#read-write"><span>2</span><strong>{locale === "fr" ? "Faire décider" : "Make decisions"}</strong><small>{locale === "fr" ? "Entrées, conditions et boucles" : "Input, conditions, and loops"}</small></a>
+            <a href="#functions"><span>3</span><strong>{locale === "fr" ? "Décomposer" : "Decompose"}</strong><small>{locale === "fr" ? "Fonctions, procédures et portée" : "Functions, procedures, and scope"}</small></a>
+          </div>
+        </section>
         {query ? (
           <section className="docs-results">
             <h2>
@@ -420,17 +532,26 @@ export function LanguageGuide({
             ))}
           </section>
         ) : (
-          chapters.map((chapter) => (
+          chapters.map((chapter, chapterIndex) => (
             <section className="docs-chapter" id={chapter.id} key={chapter.id}>
               <header>
+                <span className="chapter-number">{String(chapterIndex + 1).padStart(2, "0")}</span>
                 <chapter.icon size={20} />
-                <h2>{chapter.title}</h2>
+                <div><h2>{chapter.title}</h2><small>{chapter.topics.length} {locale === "fr" ? "notions" : "topics"}</small></div>
               </header>
-              {chapter.topics.map((topic) => (
+              {chapter.topics.map((topic) => {
+                const extra = topicExtras[locale][topic.id];
+                return (
                 <section className="docs-topic" id={topic.id} key={topic.id}>
                   <h3>{topic.title}</h3>
                   <p className="topic-summary">{topic.summary}</p>
                   <p>{topic.body}</p>
+                  {extra && (
+                    <div className="docs-concept-grid">
+                      <ul>{extra.points.map((point) => <li key={point}>{point}</li>)}</ul>
+                      <aside><strong>{locale === "fr" ? "À retenir" : "Remember"}</strong><p>{extra.note}</p></aside>
+                    </div>
+                  )}
                   {topic.table && (
                     <div className="docs-table-wrap">
                       <table>
@@ -451,12 +572,11 @@ export function LanguageGuide({
                     </div>
                   )}
                   {topic.code && (
-                    <pre>
-                      <AlgorithmCode>{topic.code}</AlgorithmCode>
-                    </pre>
+                    <CodeExample code={topic.code} locale={locale} />
                   )}
                 </section>
-              ))}
+                );
+              })}
             </section>
           ))
         )}
