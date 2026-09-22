@@ -91,7 +91,8 @@ platform to handle files naturally.
 
 The in-app guide is the quickest reference for students. The repository also
 contains the current [language reference](docs/LANGUAGE.md), including exact
-syntax and implementation limits.
+syntax and implementation limits. Planned work is tracked in the
+[1.0 release roadmap](docs/ROADMAP.md).
 
 ## Contributing
 
