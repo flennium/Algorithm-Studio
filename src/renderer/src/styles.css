@@ -135,6 +135,14 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .docs-topic .topic-summary { margin: 5px 0 16px; color: var(--text); font-weight: 700; }
 .docs-topic > p:not(.topic-summary) { max-width: 72ch; margin: 0; color: var(--text-secondary); line-height: 1.72; }
 .docs-topic pre { overflow: auto; margin: 18px 0 0; padding: 18px 20px; color: #e9f0f3; border: 1px solid #293943; border-radius: 9px; background: #101820; font: 13px/1.7 Iosevka, "Cascadia Code", Consolas, monospace; }
+.algorithm-code .syntax-keyword { color: #c4a7ff; font-weight: 650; }
+.algorithm-code .syntax-type { color: #67d8e7; }
+.algorithm-code .syntax-function { color: #82c7ff; }
+.algorithm-code .syntax-string { color: #f3c677; }
+.algorithm-code .syntax-number { color: #9ec5ff; }
+.algorithm-code .syntax-literal { color: #f29ab2; }
+.algorithm-code .syntax-operator { color: #a9b9c4; }
+.algorithm-code .syntax-comment { color: #718693; font-style: italic; }
 .docs-table-wrap { overflow: auto; margin-top: 18px; border: 1px solid var(--border); border-radius: 8px; }
 .docs-topic table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .docs-topic th, .docs-topic td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-soft); }

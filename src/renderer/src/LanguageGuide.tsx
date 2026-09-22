@@ -30,6 +30,50 @@ type Chapter = {
   topics: Topic[];
 };
 
+const languageKeywords = new Set([
+  "algorithme", "constantes", "variables", "debut", "fin", "si", "alors",
+  "sinon", "finsi", "pour", "a", "pas", "faire", "finpour", "tantque",
+  "fintantque", "repeter", "jusqua", "fonction", "finfonction", "procedure",
+  "finprocedure", "retourner", "tableau", "de", "div", "mod", "et", "ou",
+  "non",
+]);
+const languageTypes = new Set([
+  "entier", "reel", "chaine", "caractere", "booleen",
+]);
+const languageLiterals = new Set(["vrai", "faux"]);
+const languageBuiltins = new Set([
+  "lire", "ecrire", "longueur", "majuscule", "minuscule", "abs", "racine",
+  "arrondi", "min", "max",
+]);
+
+function syntaxClass(token: string, followedByCall: boolean): string | undefined {
+  const normalized = token.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (token.startsWith("//")) return "syntax-comment";
+  if (token.startsWith('"')) return "syntax-string";
+  if (/^\d/.test(token)) return "syntax-number";
+  if (languageTypes.has(normalized)) return "syntax-type";
+  if (languageLiterals.has(normalized)) return "syntax-literal";
+  if (languageKeywords.has(normalized)) return "syntax-keyword";
+  if (languageBuiltins.has(normalized) || followedByCall) return "syntax-function";
+  if (/^(?:<-|<=|>=|<>|!=|\.\.|[+*/=<>-])$/.test(token)) return "syntax-operator";
+}
+
+function AlgorithmCode({ children }: { children: string }): React.JSX.Element {
+  const tokens = Array.from(
+    children.matchAll(/"(?:\\.|[^"\\])*"|\/\/[^\n]*|\d+(?:\.\d+)?|<-|<=|>=|<>|!=|\.\.|[\p{L}_][\p{L}\p{N}_]*|\s+|./gu),
+    (match) => match[0],
+  );
+  return (
+    <code className="algorithm-code">
+      {tokens.map((token, index) => {
+        const next = tokens.slice(index + 1).find((item) => !/^\s+$/.test(item));
+        const className = syntaxClass(token, next === "(");
+        return className ? <span className={className} key={index}>{token}</span> : token;
+      })}
+    </code>
+  );
+}
+
 const content: Record<Locale, Chapter[]> = {
   fr: [
     {
@@ -408,7 +452,7 @@ export function LanguageGuide({
                   )}
                   {topic.code && (
                     <pre>
-                      <code>{topic.code}</code>
+                      <AlgorithmCode>{topic.code}</AlgorithmCode>
                     </pre>
                   )}
                 </section>
