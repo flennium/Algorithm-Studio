@@ -355,7 +355,7 @@ export function LanguageGuide({
               {locale === "fr" ? "Ouvrir l’éditeur" : "Open the editor"}
               <ChevronRight size={16} />
             </button>
-            <span>74 tests · 5 types · 3 boucles</span>
+            <span>95 tests · 5 types · 3 boucles</span>
           </div>
         </header>
         {query ? (

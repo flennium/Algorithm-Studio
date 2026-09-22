@@ -109,4 +109,138 @@ Fin`);
     expect(result.diagnostics).toEqual([]);
     expect(result.output).toEqual(["3:ALGO:4:3:3:3:8"]);
   });
+
+  it("initializes every scalar and array type with its documented default", () => {
+    const result = run(`Algorithme ValeursInitiales
+Variables
+  entier : Entier
+  reel : Reel
+  texte : Chaine
+  caractere : Caractere
+  booleen : Booleen
+  valeurs : Tableau[-1..0] de Entier
+Debut
+  Ecrire(entier, ":", reel, ":", texte, ":", caractere, ":", booleen, ":", valeurs[-1])
+Fin`);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.output).toEqual(["0:0:::Faux:0"]);
+  });
+
+  it("reads directly into an array element", () => {
+    const source = `Algorithme LectureTableau
+Variables
+  valeurs : Tableau[1..2] de Entier
+Debut
+  Lire(valeurs[2])
+  Ecrire(valeurs[2])
+Fin`;
+    expect(run(source).inputRequest).toEqual({ name: "valeurs", type: "Entier" });
+    expect(run(source, "fr", [9]).output).toEqual(["9"]);
+  });
+
+  it.each([
+    ["valeurs[1.5] <- 2", "ALG-S107"],
+    ["Ecrire(valeurs[1, 2])", "ALG-S107"],
+    ["Ecrire(valeurs)", "ALG-S108"],
+    ["Ecrire(nombre[1])", "ALG-S109"],
+    ['valeurs[1] <- "texte"', "ALG-S106"],
+  ])("diagnoses invalid array use: %s", (statement, code) => {
+    const result = run(`Algorithme TableauInvalide
+Variables
+  valeurs : Tableau[1..2] de Entier
+  nombre : Entier
+Debut
+  ${statement}
+Fin`);
+    expect(result.diagnostics[0]?.code).toBe(code);
+  });
+
+  it("keeps parameters and local variables isolated while allowing global access", () => {
+    const result = run(`Algorithme Portee
+Variables
+  base : Entier
+Fonction Somme(base : Entier; ajout : Entier) : Entier
+Variables
+  local : Entier
+Debut
+  local <- base + ajout
+  Retourner local
+FinFonction
+Procedure AfficherGlobal()
+Debut
+  Ecrire(base)
+FinProcedure
+Debut
+  base <- 10
+  Ecrire(Somme(2, 3))
+  AfficherGlobal()
+Fin`);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.output).toEqual(["5", "10"]);
+  });
+
+  it.each([
+    ["Ecrire(Double())", "ALG-S111"],
+    ['Ecrire(Double("deux"))', "ALG-S112"],
+  ])("validates routine arguments: %s", (statement, code) => {
+    const result = run(`Algorithme AppelInvalide
+Fonction Double(n : Entier) : Entier
+Debut
+  Retourner n * 2
+FinFonction
+Debut
+  ${statement}
+Fin`);
+    expect(result.diagnostics[0]?.code).toBe(code);
+  });
+
+  it("requires every function execution path to return a compatible value", () => {
+    const missing = run(`Algorithme SansRetour
+Fonction Valeur() : Entier
+Debut
+  Ecrire("appel")
+FinFonction
+Debut
+  Ecrire(Valeur())
+Fin`);
+    expect(missing.diagnostics.some(({ code }) => code === "ALG-S113")).toBe(true);
+
+    const incompatible = run(`Algorithme MauvaisRetour
+Fonction Valeur() : Entier
+Debut
+  Retourner "texte"
+FinFonction
+Debut
+  Ecrire(Valeur())
+Fin`);
+    expect(incompatible.diagnostics.some(({ code }) => code === "ALG-S113")).toBe(true);
+  });
+
+  it.each([
+    ["Procedure Action()\nDebut\n  Retourner 1\nFinProcedure\nDebut\n  Action()\nFin", "ALG-S114"],
+    ["Procedure Action()\nDebut\n  Ecrire(1)\nFinProcedure\nDebut\n  Ecrire(Action())\nFin", "ALG-S115"],
+    ["Debut\n  Retourner 1\nFin", "ALG-R105"],
+  ])("enforces return rules", (body, code) => {
+    const result = run(`Algorithme RetourInvalide\n${body}`);
+    expect(result.diagnostics.some((diagnostic) => diagnostic.code === code)).toBe(true);
+  });
+
+  it.each([
+    ['Ecrire(Racine(-1))', "ALG-S116"],
+    ['Ecrire(Longueur(1))', "ALG-S116"],
+    ["Lire(inconnue)", "ALG-S100"],
+  ])("reports invalid standard operations: %s", (statement, code) => {
+    const result = run(`Algorithme ErreurStandard\nDebut\n${statement}\nFin`);
+    expect(result.diagnostics.some((diagnostic) => diagnostic.code === code)).toBe(true);
+  });
+
+  it("validates values supplied to typed input", () => {
+    const source = `Algorithme TypeLecture
+Variables
+  age : Entier
+Debut
+  Lire(age)
+Fin`;
+    expect(run(source, "fr", ["vingt"]).diagnostics[0]?.code).toBe("ALG-S106");
+  });
 });

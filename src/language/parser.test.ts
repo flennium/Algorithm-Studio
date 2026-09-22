@@ -10,6 +10,9 @@ describe("program grammar and diagnostics", () => {
     ["Algorithme Test\nDebut\nAfficher(1)\nFin", "ALG-S110"],
     ["Algorithme Test\nDebut\nEcrire(1 +)\nFin", "ALG-P106"],
     ["Algorithme Test\nConstantes\nINVALIDE\nDebut\nFin", "ALG-P110"],
+    ["Algorithme Test\nVariables\nt : Tableau[3..1] de Entier\nDebut\nFin", "ALG-P104"],
+    ["Algorithme Test\nFonction F Entier\nDebut\nFinFonction\nDebut\nFin", "ALG-P120"],
+    ["Algorithme Test\nFonction F(x Entier) : Entier\nDebut\nRetourner x\nFinFonction\nDebut\nFin", "ALG-P121"],
   ])("reports %s as %s", (source, code) => expect(run(source).diagnostics[0]?.code).toBe(code));
 
   it("accepts accents, keyword casing, blank lines and comments", () => {
